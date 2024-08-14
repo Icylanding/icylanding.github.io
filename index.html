@@ -118,20 +118,31 @@
     <button id="reset" class="reset">Reset</button>
     <div class="footer">Designed by Ansel Zhao</div>
     <script>
-        document.getElementById('btn1').addEventListener('click', () => increaseHeight('bar1', 'score1'));
-        document.getElementById('btn2').addEventListener('click', () => increaseHeight('bar2', 'score2'));
-        document.getElementById('btn3').addEventListener('click', () => increaseHeight('bar3', 'score3'));
-        document.getElementById('btn4').addEventListener('click', () => increaseHeight('bar4', 'score4'));
-        document.getElementById('btn5').addEventListener('click', () => increaseHeight('bar5', 'score5'));
+        const buttons = document.querySelectorAll('.button');
+        let isTransitioning = false;
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (!isTransitioning) {
+                    increaseHeight(button.id.replace('btn', 'bar'), button.id.replace('btn', 'score'));
+                }
+            });
+        });
+
         document.getElementById('reset').addEventListener('click', resetBars);
 
         function increaseHeight(barId, scoreId) {
+            isTransitioning = true;
             const bar = document.getElementById(barId);
             const score = document.getElementById(scoreId);
             let currentHeight = parseInt(window.getComputedStyle(bar).height);
             let newHeight = currentHeight + 20;
             bar.style.height = newHeight + 'px';
             score.textContent = newHeight;
+
+            setTimeout(() => {
+                isTransitioning = false;
+            }, 300); // Match this time to the transition duration in CSS
         }
 
         function resetBars() {
