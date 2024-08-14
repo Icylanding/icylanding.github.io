@@ -63,19 +63,30 @@
             text-align: center;
         }
 
-        .reset {
+        .control-buttons {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .reset, .undo {
             width: 80px;
             height: 50px;
             font-size: 18px;
-            margin-left: 10px;
             text-align: center;
             line-height: 50px;
             cursor: pointer;
-            background-color: red;
             color: white;
             border: none;
             border-radius: 5px;
-            margin-bottom: 20px;
+            margin-right: 10px;
+        }
+
+        .reset {
+            background-color: red;
+        }
+
+        .undo {
+            background-color: orange;
         }
 
         .footer {
@@ -115,11 +126,15 @@
             <div class="label">5</div>
         </div>
     </div>
-    <button id="reset" class="reset">Reset</button>
+    <div class="control-buttons">
+        <button id="reset" class="reset">Reset</button>
+        <button id="undo" class="undo">Undo</button>
+    </div>
     <div class="footer">Designed by Ansel Zhao</div>
     <script>
         const buttons = document.querySelectorAll('.button');
         let isTransitioning = false;
+        let history = [];
 
         buttons.forEach(button => {
             button.addEventListener('click', () => {
@@ -130,6 +145,7 @@
         });
 
         document.getElementById('reset').addEventListener('click', resetBars);
+        document.getElementById('undo').addEventListener('click', undoLastAction);
 
         function increaseHeight(barId, scoreId) {
             isTransitioning = true;
@@ -139,6 +155,9 @@
             let newHeight = currentHeight + 20;
             bar.style.height = newHeight + 'px';
             score.textContent = newHeight;
+
+            // Save the action in history
+            history.push({ barId, previousHeight: currentHeight });
 
             setTimeout(() => {
                 isTransitioning = false;
@@ -154,6 +173,19 @@
                 bar.style.height = '20px';
                 score.textContent = '20';
             });
+
+            // Clear the history
+            history = [];
+        }
+
+        function undoLastAction() {
+            if (history.length === 0) return;
+
+            const lastAction = history.pop();
+            const bar = document.getElementById(lastAction.barId);
+            const score = bar.querySelector('span');
+            bar.style.height = lastAction.previousHeight + 'px';
+            score.textContent = lastAction.previousHeight;
         }
     </script>
 </body>
